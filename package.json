@@ -1,0 +1,23 @@
+{
+  "name": "backend-course",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LativeSoog/backend-course.git"
+  },
+  "author": "lativesoog",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LativeSoog/backend-course/issues"
+  },
+  "homepage": "https://github.com/LativeSoog/backend-course#readme",
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
