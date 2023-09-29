@@ -1,39 +1,28 @@
-const http = require("http");
-const getUsers = require("./modules/users-module");
+const express = require("express");
+const dotenv = require("dotenv");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const userRouter = require("./routes/users");
+const bookRouter = require("./routes/books");
+const logOne = require("./middlewares/logOne");
 
-const server = http.createServer((request, response) => {
-  const url = new URL(request.url, "http://127.0.0.1");
-  const params = url.searchParams;
+dotenv.config();
+const { PORT = 3000, API_URL = "http://127.0.0.1" } = process.env;
 
-  if (params.toString() !== "") {
-    if (params.has("hello")) {
-      const name = params.get("hello");
+const app = express();
 
-      if (name) {
-        response.writeHead(200, { "Content-Type": "text/plain" });
-        response.end(`Hello, ${name}!`);
-        return;
-      } else {
-        response.writeHead(400, { "Content-Type": "text/plain" });
-        response.end("Enter a name");
-        return;
-      }
-    } else {
-      response.writeHead(500);
-      response.end();
-      return;
-    }
-  }
+app.use(cors());
+app.use(logOne);
+app.use(bodyParser.json());
 
-  if (url.pathname === "/users") {
-    response.writeHead(200, { "Content-Type": "application/json" });
-    response.end(getUsers());
-    return;
-  }
-
-  response.writeHead(200, { "Content-Type": "text/plain" });
-  response.end("Hello, World!");
-  return;
+app.get("/", (request, response) => {
+  response.writeHead(200);
+  response.end(`Hello, ${request.query.hello}`);
 });
 
-server.listen(3003, () => console.log("Server is running - http://127.0.01:3003"));
+app.use(userRouter);
+app.use(bookRouter);
+
+app.listen(PORT, () => {
+  console.log(`Server is running - ${API_URL}:${PORT}`);
+});
