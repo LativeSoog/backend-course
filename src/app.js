@@ -1,39 +1,34 @@
-const http = require("http");
-const getUsers = require("./modules/users-module");
+const express = require("express");
+const dotenv = require("dotenv");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const mongoose = require("mongoose");
 
-const server = http.createServer((request, response) => {
-  const url = new URL(request.url, "http://127.0.0.1");
-  const params = url.searchParams;
+const userRouter = require("./routes/users");
+const bookRouter = require("./routes/books");
+const actionRouter = require("./routes/actions");
+const log = require("./middlewares/log");
 
-  if (params.toString() !== "") {
-    if (params.has("hello")) {
-      const name = params.get("hello");
+dotenv.config();
 
-      if (name) {
-        response.writeHead(200, { "Content-Type": "text/plain" });
-        response.end(`Hello, ${name}!`);
-        return;
-      } else {
-        response.writeHead(400, { "Content-Type": "text/plain" });
-        response.end("Enter a name");
-        return;
-      }
-    } else {
-      response.writeHead(500);
-      response.end();
-      return;
-    }
-  }
+const { PORT = 3000, API_URL = "http://127.0.0.1", MONGO_URL = "mongodb://127.0.0.1:27017/libdb" } = process.env;
 
-  if (url.pathname === "/users") {
-    response.writeHead(200, { "Content-Type": "application/json" });
-    response.end(getUsers());
-    return;
-  }
+mongoose
+  .connect(MONGO_URL)
+  .then(() => console.log(`Connected to MongoDB`))
 
-  response.writeHead(200, { "Content-Type": "text/plain" });
-  response.end("Hello, World!");
-  return;
+  .catch((error) => console.log(error));
+
+const app = express();
+
+app.use(cors());
+app.use(log);
+app.use(bodyParser.json());
+
+app.use(userRouter);
+app.use(bookRouter);
+app.use(actionRouter);
+
+app.listen(PORT, () => {
+  console.log(`Server is running - ${API_URL}:${PORT}`);
 });
-
-server.listen(3003, () => console.log("Server is running - http://127.0.01:3003"));
