@@ -1,10 +1,10 @@
 const router = require("express").Router();
 
-const { getBooks, getBook } = require("../controllers/books");
+const { getBooks, getBook, createBook, deleteBook } = require("../controllers/books");
 
 router.get("/books", getBooks);
 router.get("/books/:book_id", getBook);
-router.post("/users/:user_id/books/:book_id");
-router.delete("/users/:user_id/books/:book_id");
+router.post("/books", createBook);
+router.delete("/books/:book_id", deleteBook);
 
 module.exports = router;

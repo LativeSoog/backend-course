@@ -1,24 +1,72 @@
+const User = require("../models/user");
+
 const getUsers = (req, res) => {
-  // Get All Users
+  User.find({})
+    .then((user) => {
+      return res.status(200).send(user);
+    })
+    .catch((error) => {
+      return res.status(500).send(error.message);
+    });
 };
 
 const getUser = (req, res) => {
   const { user_id } = req.params;
-  res.writeHead(200);
-  res.end(`User id ${user_id}`);
+  User.findById(user_id)
+    .then((user) => {
+      return res.status(200).send(user);
+    })
+    .catch((error) => {
+      return res.status(500).send(error.message);
+    });
 };
 
 const regUser = (req, res) => {
-  res.status(201);
-  res.send(req.body);
+  const data = req.body;
+  User.create(data)
+    .then((user) => {
+      return res.status(201).send(user);
+    })
+    .catch((error) => {
+      return res.status(500).send(error.message);
+    });
 };
 
 const logUser = (req, res) => {
-  // Login user
+  const userId = req.body;
+
+  User.findById(userId)
+    .then((user) => {
+      res.status(201).send(`Успешно произведён вход, пользователь ${user.username}`);
+    })
+    .catch((error) => {
+      return res.status(500).send(error.message);
+    });
 };
 
 const updateUser = (req, res) => {
-  //Update user info
+  const { user_id } = req.params;
+  const data = req.body;
+
+  User.findByIdAndUpdate(user_id, data, { new: true, runValidators: true })
+    .then((user) => {
+      return res.status(200).send(user);
+    })
+    .catch((error) => {
+      return res.status(500).send(error.message);
+    });
+};
+
+const deleteUser = (req, res) => {
+  const { user_id } = req.params;
+
+  User.findByIdAndDelete(user_id)
+    .then((user) => {
+      return res.status(200).send(`Пользователь ${user.username} успешно удалён `);
+    })
+    .catch((error) => {
+      return res.status(500).send(error.message);
+    });
 };
 
 module.exports = {
@@ -27,4 +75,5 @@ module.exports = {
   regUser,
   logUser,
   updateUser,
+  deleteUser,
 };
